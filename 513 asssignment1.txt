@@ -1,0 +1,45 @@
+Member: 
+HONGYANG YU(167008944)
+YUZHUO LI(166009044)
+
+Our basic thought is using all sums twice.
+
+For the first time, we can get a1, a1+ a2, a1+a2+a3...
+in the second round with the same code as all sums, we can get
+a1, 2a1+a2, 3a1+2a2+a3...That's the final result.
+
+In our code, firstly, of course, read data form the file as the int* in.
+set d_in,d_out as the gpu array.
+int isOdd = 1;
+for(int offset=1; offset<N; offset = (offset<<1)){
+
+means every time offet multiply 2 and using log(n) round
+
+if(isOdd == 1){ //odd
+	add<<<(N+BLOCKSIZE-1)/BLOCKSIZE, BLOCKSIZE>>>(d_in, d_out, offset, N);
+	isOdd = 0;
+} else { //even
+	add<<<(N+BLOCKSIZE-1)/BLOCKSIZE, BLOCKSIZE>>>(d_out, d_in, offset, N);
+	isOdd = 1;
+}
+
+means if the first time, d_in is the input and d_out is the caculated result. 
+Next time, it reverses.
+Here, we call kernel function. 
+
+int gid = threadIdx.x + blockIdx.x * blockDim.x;
+out[gid] = in[gid];
+if(gid >= offset)
+	out[gid] += in[gid-offset];
+The thread before offet has already been caculated. We only need to caculate the result after it.
+
+Using for loop in the main function but not int the kernel function is to
+solve the syncronize problem between blocks.
+
+Then, cudaMemcpy(in, d_in, size, cudaMemcpyDeviceToHost);
+	cudaMemcpy(out, d_out, size, cudaMemcpyDeviceToHost);
+At last, check if isOdd is 1, array in is the answer, if 0, array out is the answer.
+
+Then, write the answer to the output file.
+
+
