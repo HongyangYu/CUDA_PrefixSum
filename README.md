@@ -8,6 +8,8 @@ Input numbers:	1	2	3	4	5	6	...
 
 Output prefix sums:	1	3	6	10	15	21	...
 
+
+
 2. Weighted Prefix Sum:
 
 INPUT: An integer n and an array A= (a_1,...,a_n) of floating point numbers .
